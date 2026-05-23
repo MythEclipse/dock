@@ -4,13 +4,44 @@ import com.mytheclipse.orchestrator.data.api.ApiResult
 import com.mytheclipse.orchestrator.data.api.DockerManagerApi
 import com.mytheclipse.orchestrator.data.api.NetworkModule
 import com.mytheclipse.orchestrator.session.SessionCookieStore
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.FormBody
+import okhttp3.OkHttpClient
 import okhttp3.Request
 
 class AuthRepository(
     private val sessionCookieStore: SessionCookieStore,
     private val networkModule: NetworkModule
 ) {
+    companion object {
+        suspend fun executeAuthCallback(
+            client: OkHttpClient,
+            request: Request,
+            dispatcher: CoroutineDispatcher = Dispatchers.IO,
+        ): ApiResult<Unit> = withContext(dispatcher) {
+            client.newCall(request).execute().use { loginResponse ->
+                if (loginResponse.isSuccessful) {
+                    ApiResult.Success(Unit)
+                } else if (loginResponse.code == 302) {
+                    val location = loginResponse.header("Location").orEmpty()
+                    if (location.contains("error=", ignoreCase = true)) {
+                        ApiResult.Error(401, "Invalid email or password")
+                    } else {
+                        ApiResult.Success(Unit)
+                    }
+                } else {
+                    val errorMessage = when (loginResponse.code) {
+                        401 -> "Invalid email or password"
+                        else -> "Login failed"
+                    }
+                    ApiResult.Error(loginResponse.code, errorMessage)
+                }
+            }
+        }
+    }
+
     private val api: DockerManagerApi = networkModule.dockerManagerApi
 
     suspend fun login(email: String, password: String): ApiResult<Unit> {
@@ -36,24 +67,7 @@ class AuthRepository(
                 )
                 .build()
 
-            networkModule.authHttpClient.newCall(request).execute().use { loginResponse ->
-                if (loginResponse.isSuccessful) {
-                    ApiResult.Success(Unit)
-                } else if (loginResponse.code == 302) {
-                    val location = loginResponse.header("Location").orEmpty()
-                    if (location.contains("error=", ignoreCase = true)) {
-                        ApiResult.Error(401, "Invalid email or password")
-                    } else {
-                        ApiResult.Success(Unit)
-                    }
-                } else {
-                    val errorMessage = when (loginResponse.code) {
-                        401 -> "Invalid email or password"
-                        else -> "Login failed"
-                    }
-                    ApiResult.Error(loginResponse.code, errorMessage)
-                }
-            }
+            executeAuthCallback(networkModule.authHttpClient, request)
         } catch (e: Exception) {
             ApiResult.Error(null, e.message ?: "Login failed")
         }
