@@ -126,10 +126,12 @@ class ContainersViewModel(
         ramMb: Int? = null,
         ownerId: String? = null
     ) {
+        if (_uiState.value.actionInProgress != null) return
+
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(actionInProgress = "Creating container...", error = null)
             try {
-                val result = containerRepository.create(nodeId, name, image)
+                val result = containerRepository.create(nodeId, name, image, cpu, ramMb, ownerId)
                 when (result) {
                     is ApiResult.Success -> {
                         val updatedContainers = _uiState.value.containers + result.data
@@ -157,6 +159,8 @@ class ContainersViewModel(
     }
 
     fun startContainer(containerId: String) {
+        if (_uiState.value.actionInProgress != null) return
+
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(actionInProgress = "Starting container...", error = null)
             try {
@@ -186,6 +190,8 @@ class ContainersViewModel(
     }
 
     fun stopContainer(containerId: String) {
+        if (_uiState.value.actionInProgress != null) return
+
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(actionInProgress = "Stopping container...", error = null)
             try {
@@ -215,6 +221,8 @@ class ContainersViewModel(
     }
 
     fun restartContainer(containerId: String) {
+        if (_uiState.value.actionInProgress != null) return
+
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(actionInProgress = "Restarting container...", error = null)
             try {
@@ -244,6 +252,8 @@ class ContainersViewModel(
     }
 
     fun deleteContainer(containerId: String) {
+        if (_uiState.value.actionInProgress != null) return
+
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(actionInProgress = "Deleting container...", error = null)
             try {
@@ -275,8 +285,10 @@ class ContainersViewModel(
     }
 
     fun loadLogs(containerId: String) {
+        if (_uiState.value.isLoadingLogs) return
+
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoadingLogs = true, error = null)
+            _uiState.value = _uiState.value.copy(isLoadingLogs = true, error = null, logs = "")
             try {
                 val result = containerRepository.logs(containerId)
                 when (result) {
@@ -303,7 +315,7 @@ class ContainersViewModel(
     }
 
     fun selectContainer(container: ContainerDto) {
-        _uiState.value = _uiState.value.copy(selectedContainer = container)
+        _uiState.value = _uiState.value.copy(selectedContainer = container, logs = "")
     }
 
     fun clearError() {

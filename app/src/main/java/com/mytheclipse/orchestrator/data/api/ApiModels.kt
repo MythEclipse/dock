@@ -96,7 +96,10 @@ data class ContainerDto(
     val name: String,
     val image: String,
     val status: String,
-    val ports: List<String>,
+    val cpu: Int? = null,
+    val ramMb: Int? = null,
+    val owner: UserDto? = null,
+    val ownerId: String? = null,
     val createdAt: String,
     val updatedAt: String
 )
@@ -119,7 +122,9 @@ data class CreateContainerRequest(
     val nodeId: String,
     val name: String,
     val image: String,
-    val ports: List<String>? = null,
+    val cpu: Int? = null,
+    val ramMb: Int? = null,
+    val ownerId: String? = null,
     val env: Map<String, String>? = null
 )
 

@@ -212,8 +212,8 @@ fun ContainersScreen(
         CreateContainerDialog(
             nodes = uiState.nodes,
             onDismiss = { showCreateDialog = false },
-            onCreate = { nodeId, name, image ->
-                viewModel.createContainer(nodeId, name, image)
+            onCreate = { nodeId, name, image, cpu, ram, ownerId ->
+                viewModel.createContainer(nodeId, name, image, cpu, ram, ownerId)
                 showCreateDialog = false
             },
             viewModel = viewModel
@@ -333,6 +333,19 @@ fun ContainerCard(
                         color = TextMuted
                     )
                 }
+                if (container.owner != null) {
+                    Text(
+                        text = "Owner: ${container.owner.email}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = TextMuted
+                    )
+                } else if (container.ownerId != null) {
+                    Text(
+                        text = "Owner: ${container.ownerId}",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = TextMuted
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -374,13 +387,18 @@ fun ContainerCard(
 fun CreateContainerDialog(
     nodes: List<NodeDto>,
     onDismiss: () -> Unit,
-    onCreate: (nodeId: String, name: String, image: String) -> Unit,
+    onCreate: (nodeId: String, name: String, image: String, cpu: Int?, ramMb: Int?, ownerId: String?) -> Unit,
     viewModel: ContainersViewModel
 ) {
     var selectedNodeId by remember { mutableStateOf(nodes.firstOrNull()?.id ?: "") }
     var containerName by remember { mutableStateOf("") }
     var imageName by remember { mutableStateOf("") }
+    var cpuValue by remember { mutableStateOf("") }
+    var ramValue by remember { mutableStateOf("") }
+    var selectedOwnerId by remember { mutableStateOf("") }
     var searchQuery by remember { mutableStateOf("") }
+    var showNodeDropdown by remember { mutableStateOf(false) }
+    var showOwnerDropdown by remember { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsState()
 
     Dialog(onDismissRequest = onDismiss) {
@@ -405,23 +423,58 @@ fun CreateContainerDialog(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Node Selection
                 Text(
-                    text = "Node",
+                    text = "Node *",
                     style = MaterialTheme.typography.labelMedium,
                     color = TextPrimary
                 )
-                OutlinedTextField(
-                    value = nodes.find { it.id == selectedNodeId }?.name ?: "",
-                    onValueChange = {},
-                    readOnly = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = false
-                )
+                if (nodes.isEmpty()) {
+                    Text(
+                        text = "No nodes available. Please add a node first.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                } else {
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = nodes.find { it.id == selectedNodeId }?.name ?: "Select a node",
+                            onValueChange = {},
+                            readOnly = true,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { showNodeDropdown = true },
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = Icons.Filled.MoreVert,
+                                    contentDescription = "Select node"
+                                )
+                            }
+                        )
+                        DropdownMenu(
+                            expanded = showNodeDropdown,
+                            onDismissRequest = { showNodeDropdown = false },
+                            modifier = Modifier.fillMaxWidth(0.9f)
+                        ) {
+                            nodes.forEach { node ->
+                                DropdownMenuItem(
+                                    text = { Text(node.name) },
+                                    onClick = {
+                                        selectedNodeId = node.id
+                                        showNodeDropdown = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
+                // Container Name
                 Text(
-                    text = "Container Name",
+                    text = "Container Name *",
                     style = MaterialTheme.typography.labelMedium,
                     color = TextPrimary
                 )
@@ -434,8 +487,9 @@ fun CreateContainerDialog(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
+                // Image
                 Text(
-                    text = "Image",
+                    text = "Image *",
                     style = MaterialTheme.typography.labelMedium,
                     color = TextPrimary
                 )
@@ -448,6 +502,86 @@ fun CreateContainerDialog(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
+                // CPU
+                Text(
+                    text = "CPU Cores",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = TextPrimary
+                )
+                OutlinedTextField(
+                    value = cpuValue,
+                    onValueChange = { cpuValue = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("e.g., 2") }
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // RAM
+                Text(
+                    text = "RAM (MB)",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = TextPrimary
+                )
+                OutlinedTextField(
+                    value = ramValue,
+                    onValueChange = { ramValue = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = { Text("e.g., 512") }
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Owner Selection
+                if (uiState.users.isNotEmpty()) {
+                    Text(
+                        text = "Owner",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = TextPrimary
+                    )
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = uiState.users.find { it.id == selectedOwnerId }?.email ?: "Select owner (optional)",
+                            onValueChange = {},
+                            readOnly = true,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { showOwnerDropdown = true },
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = Icons.Filled.MoreVert,
+                                    contentDescription = "Select owner"
+                                )
+                            }
+                        )
+                        DropdownMenu(
+                            expanded = showOwnerDropdown,
+                            onDismissRequest = { showOwnerDropdown = false },
+                            modifier = Modifier.fillMaxWidth(0.9f)
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("None") },
+                                onClick = {
+                                    selectedOwnerId = ""
+                                    showOwnerDropdown = false
+                                }
+                            )
+                            uiState.users.forEach { user ->
+                                DropdownMenuItem(
+                                    text = { Text(user.email) },
+                                    onClick = {
+                                        selectedOwnerId = user.id
+                                        showOwnerDropdown = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
+
+                // Search Docker Hub
                 Text(
                     text = "Search Docker Hub",
                     style = MaterialTheme.typography.labelMedium,
@@ -509,12 +643,19 @@ fun CreateContainerDialog(
                     }
                     Button(
                         onClick = {
-                            if (containerName.isNotBlank() && imageName.isNotBlank()) {
-                                onCreate(selectedNodeId, containerName, imageName)
+                            if (containerName.isNotBlank() && imageName.isNotBlank() && selectedNodeId.isNotBlank()) {
+                                val cpu = cpuValue.toIntOrNull()
+                                val ram = ramValue.toIntOrNull()
+                                val owner = if (selectedOwnerId.isNotBlank()) selectedOwnerId else null
+
+                                // Validate positive integers
+                                if ((cpu == null || cpu > 0) && (ram == null || ram > 0)) {
+                                    onCreate(selectedNodeId, containerName, imageName, cpu, ram, owner)
+                                }
                             }
                         },
                         modifier = Modifier.weight(1f),
-                        enabled = containerName.isNotBlank() && imageName.isNotBlank() && selectedNodeId.isNotBlank()
+                        enabled = containerName.isNotBlank() && imageName.isNotBlank() && selectedNodeId.isNotBlank() && nodes.isNotEmpty()
                     ) {
                         Text("Create")
                     }
