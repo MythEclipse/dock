@@ -408,7 +408,7 @@ private fun NodeFormDialog(
                 enabled = !isLoading
             ) {
                 if (isLoading) {
-                    CircularProgressIndicator(modifier = Modifier.padding(end = 8.dp))
+                    CircularProgressIndicator(modifier = Modifier.size(16.dp).padding(end = 8.dp))
                 }
                 Text(if (isEditing) "Update" else "Create")
             }
