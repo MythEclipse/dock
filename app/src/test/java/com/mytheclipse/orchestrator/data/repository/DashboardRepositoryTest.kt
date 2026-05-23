@@ -10,8 +10,8 @@ class DashboardRepositoryTest {
     fun summaryCountsNodesAndContainersByStatus() {
         val summary = DashboardRepository.summaryFrom(
             nodes = listOf(
-                NodeDto(id = "n1", name = "Node 1", host = "localhost", port = 2375, status = "online", createdAt = "", updatedAt = ""),
-                NodeDto(id = "n2", name = "Node 2", host = "localhost", port = 2376, status = "offline", createdAt = "", updatedAt = ""),
+                NodeDto(id = "n1", name = "Node 1", portainerUrl = "http://localhost:9000", status = "online", createdAt = "", updatedAt = ""),
+                NodeDto(id = "n2", name = "Node 2", portainerUrl = "http://localhost:9001", status = "offline", createdAt = "", updatedAt = ""),
             ),
             containers = listOf(
                 ContainerDto(id = "c1", nodeId = "n1", name = "A", image = "nginx", status = "running", ports = emptyList(), createdAt = "", updatedAt = ""),

@@ -24,9 +24,9 @@ class NodeRepository(
         }
     }
 
-    suspend fun create(name: String, host: String, port: Int): ApiResult<NodeDto> {
+    suspend fun create(name: String, portainerUrl: String, portainerUsername: String, portainerPassword: String): ApiResult<NodeDto> {
         return runCatching {
-            network.parseResponse(api.createNode(CreateNodeRequest(name, host, port)))
+            network.parseResponse(api.createNode(CreateNodeRequest(name, portainerUrl, portainerUsername, portainerPassword)))
         }.getOrElse {
             ApiResult.Error(null, it.message ?: "Network request failed")
         }.let { result ->
@@ -37,9 +37,9 @@ class NodeRepository(
         }
     }
 
-    suspend fun update(id: String, name: String? = null, host: String? = null, port: Int? = null): ApiResult<NodeDto> {
+    suspend fun update(id: String, name: String? = null, portainerUrl: String? = null, portainerUsername: String? = null, portainerPassword: String? = null, status: String? = null): ApiResult<NodeDto> {
         return runCatching {
-            network.parseResponse(api.updateNode(id, UpdateNodeRequest(name, host, port)))
+            network.parseResponse(api.updateNode(id, UpdateNodeRequest(name, portainerUrl, portainerUsername, portainerPassword, status)))
         }.getOrElse {
             ApiResult.Error(null, it.message ?: "Network request failed")
         }.let { result ->

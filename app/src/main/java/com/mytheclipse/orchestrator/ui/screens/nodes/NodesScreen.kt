@@ -202,8 +202,10 @@ fun NodesScreen(
                 isEditing = uiState.isFormEditing,
                 isLoading = uiState.actionInProgress,
                 onNameChange = { viewModel.updateFormName(it) },
-                onHostChange = { viewModel.updateFormHost(it) },
-                onPortChange = { viewModel.updateFormPort(it) },
+                onPortainerUrlChange = { viewModel.updateFormPortainerUrl(it) },
+                onPortainerUsernameChange = { viewModel.updateFormPortainerUsername(it) },
+                onPortainerPasswordChange = { viewModel.updateFormPortainerPassword(it) },
+                onStatusChange = { viewModel.updateFormStatus(it) },
                 onSubmit = { viewModel.submitForm() },
                 onDismiss = { viewModel.closeForm() }
             )
@@ -243,11 +245,31 @@ private fun NodeCard(
                     color = TextPrimary
                 )
                 Text(
-                    text = "${node.host}:${node.port}",
+                    text = node.ipAddress ?: node.portainerUrl,
                     style = MaterialTheme.typography.bodySmall,
                     color = TextMuted,
                     modifier = Modifier.padding(top = 4.dp)
                 )
+                if (node.cpuCapacity != null || node.ramCapacityMb != null) {
+                    Text(
+                        text = buildString {
+                            if (node.cpuCapacity != null) append("CPU: ${node.cpuCapacity}")
+                            if (node.cpuCapacity != null && node.ramCapacityMb != null) append(" | ")
+                            if (node.ramCapacityMb != null) append("RAM: ${node.ramCapacityMb}MB")
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextMuted,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+                if (node.lastSyncedAt != null) {
+                    Text(
+                        text = "Last synced: ${node.lastSyncedAt}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextMuted,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
             }
             StatusChip(text = node.status, status = node.status)
         }
@@ -309,8 +331,10 @@ private fun NodeFormDialog(
     isEditing: Boolean,
     isLoading: Boolean,
     onNameChange: (String) -> Unit,
-    onHostChange: (String) -> Unit,
-    onPortChange: (String) -> Unit,
+    onPortainerUrlChange: (String) -> Unit,
+    onPortainerUsernameChange: (String) -> Unit,
+    onPortainerPasswordChange: (String) -> Unit,
+    onStatusChange: (String) -> Unit,
     onSubmit: () -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
@@ -337,23 +361,45 @@ private fun NodeFormDialog(
                     enabled = !isLoading
                 )
                 OutlinedTextField(
-                    value = formState.host,
-                    onValueChange = onHostChange,
-                    label = { Text("Host") },
-                    isError = formState.hostError != null,
-                    supportingText = formState.hostError?.let { { Text(it) } },
+                    value = formState.portainerUrl,
+                    onValueChange = onPortainerUrlChange,
+                    label = { Text("Portainer URL") },
+                    isError = formState.portainerUrlError != null,
+                    supportingText = formState.portainerUrlError?.let { { Text(it) } },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = !isLoading,
+                    placeholder = { Text("https://portainer.example.com") }
+                )
+                OutlinedTextField(
+                    value = formState.portainerUsername,
+                    onValueChange = onPortainerUsernameChange,
+                    label = { Text("Portainer Username") },
+                    isError = formState.portainerUsernameError != null,
+                    supportingText = formState.portainerUsernameError?.let { { Text(it) } },
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !isLoading
                 )
                 OutlinedTextField(
-                    value = formState.port,
-                    onValueChange = onPortChange,
-                    label = { Text("Port") },
-                    isError = formState.portError != null,
-                    supportingText = formState.portError?.let { { Text(it) } },
+                    value = formState.portainerPassword,
+                    onValueChange = onPortainerPasswordChange,
+                    label = { Text("Portainer Password") },
+                    isError = formState.portainerPasswordError != null,
+                    supportingText = formState.portainerPasswordError?.let { { Text(it) } },
                     modifier = Modifier.fillMaxWidth(),
                     enabled = !isLoading
                 )
+                if (isEditing) {
+                    OutlinedTextField(
+                        value = formState.status,
+                        onValueChange = onStatusChange,
+                        label = { Text("Status (optional)") },
+                        isError = formState.statusError != null,
+                        supportingText = formState.statusError?.let { { Text(it) } },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = !isLoading,
+                        placeholder = { Text("online/offline") }
+                    )
+                }
             }
         },
         confirmButton = {

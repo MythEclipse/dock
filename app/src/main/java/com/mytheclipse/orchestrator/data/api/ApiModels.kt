@@ -50,19 +50,21 @@ data class UpdateUserRequest(
 data class NodeDto(
     val id: String,
     val name: String,
-    val host: String,
-    val port: Int,
+    val ipAddress: String? = null,
+    val portainerUrl: String,
+    val portainerUsername: String? = null,
+    val portainerEndpointId: String? = null,
+    val cpuCapacity: String? = null,
+    val ramCapacityMb: Long? = null,
     val status: String,
+    val lastSyncedAt: String? = null,
     val createdAt: String,
     val updatedAt: String
 )
 
 @JsonClass(generateAdapter = false)
 data class NodesResponse(
-    val nodes: List<NodeDto>,
-    val total: Int,
-    val page: Int,
-    val pageSize: Int
+    val nodes: List<NodeDto>
 )
 
 @JsonClass(generateAdapter = false)
@@ -73,15 +75,18 @@ data class NodeResponse(
 @JsonClass(generateAdapter = false)
 data class CreateNodeRequest(
     val name: String,
-    val host: String,
-    val port: Int
+    val portainerUrl: String,
+    val portainerUsername: String,
+    val portainerPassword: String
 )
 
 @JsonClass(generateAdapter = false)
 data class UpdateNodeRequest(
     val name: String? = null,
-    val host: String? = null,
-    val port: Int? = null
+    val portainerUrl: String? = null,
+    val portainerUsername: String? = null,
+    val portainerPassword: String? = null,
+    val status: String? = null
 )
 
 @JsonClass(generateAdapter = false)
