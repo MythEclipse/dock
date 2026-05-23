@@ -159,13 +159,14 @@ data class AuditLogsResponse(
 
 @JsonClass(generateAdapter = false)
 data class AuditLogDto(
-    val id: String,
-    val userId: String,
+    val id: String? = null,
+    val userId: String? = null,
     val action: String,
-    val resource: String,
-    val resourceId: String,
-    val timestamp: String,
-    val details: String? = null
+    val resourceType: String,
+    val resourceId: String? = null,
+    val metadata: String? = null,
+    val createdAt: String? = null,
+    val user: UserDto? = null
 )
 
 @JsonClass(generateAdapter = false)

@@ -25,6 +25,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.mytheclipse.orchestrator.AppContainer
 import com.mytheclipse.orchestrator.ui.screens.auditlogs.AuditLogsScreen
+import com.mytheclipse.orchestrator.ui.screens.auditlogs.AuditLogsViewModel
 import com.mytheclipse.orchestrator.ui.screens.containers.ContainerLogsScreen
 import com.mytheclipse.orchestrator.ui.screens.containers.ContainersScreen
 import com.mytheclipse.orchestrator.ui.screens.containers.ContainersViewModel
@@ -33,6 +34,7 @@ import com.mytheclipse.orchestrator.ui.screens.login.LoginScreen
 import com.mytheclipse.orchestrator.ui.screens.login.LoginViewModel
 import com.mytheclipse.orchestrator.ui.screens.nodes.NodesScreen
 import com.mytheclipse.orchestrator.ui.screens.users.UsersScreen
+import com.mytheclipse.orchestrator.ui.screens.users.UsersViewModel
 
 @Composable
 fun AppNavGraph(
@@ -100,7 +102,10 @@ fun AppNavGraph(
                 navController = navController,
                 currentRoute = AppDestination.Users.route
             ) { modifier ->
-                UsersScreen(modifier = modifier)
+                val viewModel = remember {
+                    UsersViewModel(appContainer.userRepository)
+                }
+                UsersScreen(viewModel = viewModel, modifier = modifier)
             }
         }
 
@@ -109,7 +114,10 @@ fun AppNavGraph(
                 navController = navController,
                 currentRoute = AppDestination.AuditLogs.route
             ) { modifier ->
-                AuditLogsScreen(modifier = modifier)
+                val viewModel = remember {
+                    AuditLogsViewModel(appContainer.auditLogRepository)
+                }
+                AuditLogsScreen(viewModel = viewModel, modifier = modifier)
             }
         }
 
