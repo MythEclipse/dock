@@ -14,3 +14,6 @@
 .cxx
 local.properties
 .codegraph/
+.claude/worktrees/
+build.log
+build_output.log
