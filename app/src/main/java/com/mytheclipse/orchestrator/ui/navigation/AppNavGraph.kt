@@ -25,8 +25,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.mytheclipse.orchestrator.AppContainer
 import com.mytheclipse.orchestrator.ui.screens.auditlogs.AuditLogsScreen
-import com.mytheclipse.orchestrator.ui.screens.containerlogs.ContainerLogsScreen
+import com.mytheclipse.orchestrator.ui.screens.containers.ContainerLogsScreen
 import com.mytheclipse.orchestrator.ui.screens.containers.ContainersScreen
+import com.mytheclipse.orchestrator.ui.screens.containers.ContainersViewModel
 import com.mytheclipse.orchestrator.ui.screens.dashboard.DashboardScreen
 import com.mytheclipse.orchestrator.ui.screens.login.LoginScreen
 import com.mytheclipse.orchestrator.ui.screens.login.LoginViewModel
@@ -83,7 +84,14 @@ fun AppNavGraph(
                 navController = navController,
                 currentRoute = AppDestination.Containers.route
             ) { modifier ->
-                ContainersScreen(modifier = modifier)
+                val viewModel = remember {
+                    ContainersViewModel(
+                        appContainer.containerRepository,
+                        appContainer.nodeRepository,
+                        appContainer.userRepository
+                    )
+                }
+                ContainersScreen(viewModel = viewModel, modifier = modifier)
             }
         }
 
@@ -117,7 +125,19 @@ fun AppNavGraph(
                 currentRoute = AppDestination.ContainerLogs.route,
                 showBottomNav = false
             ) { modifier ->
-                ContainerLogsScreen(containerId = containerId, modifier = modifier)
+                val viewModel = remember {
+                    ContainersViewModel(
+                        appContainer.containerRepository,
+                        appContainer.nodeRepository,
+                        appContainer.userRepository
+                    )
+                }
+                ContainerLogsScreen(
+                    containerId = containerId,
+                    viewModel = viewModel,
+                    onBack = { navController.popBackStack() },
+                    modifier = modifier
+                )
             }
         }
     }
