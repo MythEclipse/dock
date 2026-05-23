@@ -4,6 +4,8 @@ import com.mytheclipse.orchestrator.data.api.ApiResult
 import com.mytheclipse.orchestrator.data.api.DockerManagerApi
 import com.mytheclipse.orchestrator.data.api.NetworkModule
 import com.mytheclipse.orchestrator.session.SessionCookieStore
+import okhttp3.FormBody
+import okhttp3.Request
 
 class AuthRepository(
     private val sessionCookieStore: SessionCookieStore,
@@ -21,25 +23,36 @@ class AuthRepository(
 
             val csrfToken = csrfResponse.body()!!.csrfToken
 
-            // Step 2: Attempt login with credentials
-            val loginResponse = api.login(
-                csrfToken = csrfToken,
-                email = email,
-                password = password,
-                json = "true"
-            )
+            val callbackUrl = "${com.mytheclipse.orchestrator.data.api.ApiConfig.BaseUrl}api/auth/callback/credentials"
+            val request = Request.Builder()
+                .url(callbackUrl)
+                .post(
+                    FormBody.Builder()
+                        .add("csrfToken", csrfToken)
+                        .add("email", email)
+                        .add("password", password)
+                        .add("json", "true")
+                        .build()
+                )
+                .build()
 
-            // Step 3: Check if login was successful
-            // NextAuth credentials flow returns 200 on success, 401 on failure
-            if (loginResponse.isSuccessful) {
-                // Session cookies are automatically saved by SessionCookieStore
-                ApiResult.Success(Unit)
-            } else {
-                val errorMessage = when (loginResponse.code()) {
-                    401 -> "Invalid email or password"
-                    else -> "Login failed"
+            networkModule.authHttpClient.newCall(request).execute().use { loginResponse ->
+                if (loginResponse.isSuccessful) {
+                    ApiResult.Success(Unit)
+                } else if (loginResponse.code == 302) {
+                    val location = loginResponse.header("Location").orEmpty()
+                    if (location.contains("error=", ignoreCase = true)) {
+                        ApiResult.Error(401, "Invalid email or password")
+                    } else {
+                        ApiResult.Success(Unit)
+                    }
+                } else {
+                    val errorMessage = when (loginResponse.code) {
+                        401 -> "Invalid email or password"
+                        else -> "Login failed"
+                    }
+                    ApiResult.Error(loginResponse.code, errorMessage)
                 }
-                ApiResult.Error(loginResponse.code(), errorMessage)
             }
         } catch (e: Exception) {
             ApiResult.Error(null, e.message ?: "Login failed")

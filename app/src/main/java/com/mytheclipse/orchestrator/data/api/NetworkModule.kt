@@ -21,6 +21,8 @@ class NetworkModule(private val sessionCookieStore: SessionCookieStore) {
         })
         .build()
 
+    val authHttpClient: OkHttpClient = createAuthHttpClient(okHttpClient)
+
     private val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(ApiConfig.BaseUrl)
         .client(okHttpClient)
@@ -28,6 +30,15 @@ class NetworkModule(private val sessionCookieStore: SessionCookieStore) {
         .build()
 
     val dockerManagerApi: DockerManagerApi = retrofit.create(DockerManagerApi::class.java)
+
+    companion object {
+        fun createAuthHttpClient(baseClient: OkHttpClient): OkHttpClient {
+            return baseClient.newBuilder()
+                .followRedirects(false)
+                .followSslRedirects(false)
+                .build()
+        }
+    }
 
     fun <T> parseResponse(response: Response<T>): ApiResult<T> {
         return if (response.isSuccessful && response.body() != null) {
