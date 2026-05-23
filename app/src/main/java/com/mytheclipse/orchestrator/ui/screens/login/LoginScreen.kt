@@ -12,6 +12,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -28,9 +29,11 @@ fun LoginScreen(
 ) {
     val uiState = viewModel.uiState
 
-    if (uiState.isLoggedIn) {
-        onLoginSuccess()
-        viewModel.resetLoginState()
+    LaunchedEffect(uiState.isLoggedIn) {
+        if (uiState.isLoggedIn) {
+            onLoginSuccess()
+            viewModel.resetLoginState()
+        }
     }
 
     Column(
