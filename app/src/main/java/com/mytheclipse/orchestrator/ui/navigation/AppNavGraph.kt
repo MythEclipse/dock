@@ -14,6 +14,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -48,7 +49,7 @@ fun AppNavGraph(
         startDestination = startDestination
     ) {
         composable(AppDestination.Login.route) {
-            val loginViewModel = LoginViewModel(appContainer.authRepository)
+            val loginViewModel = remember { LoginViewModel(appContainer.authRepository) }
             LoginScreen(
                 viewModel = loginViewModel,
                 onLoginSuccess = {
@@ -63,8 +64,8 @@ fun AppNavGraph(
             AuthenticatedNavShell(
                 navController = navController,
                 currentRoute = AppDestination.Dashboard.route
-            ) {
-                DashboardScreen()
+            ) { modifier ->
+                DashboardScreen(modifier = modifier)
             }
         }
 
@@ -72,8 +73,8 @@ fun AppNavGraph(
             AuthenticatedNavShell(
                 navController = navController,
                 currentRoute = AppDestination.Nodes.route
-            ) {
-                NodesScreen()
+            ) { modifier ->
+                NodesScreen(modifier = modifier)
             }
         }
 
@@ -81,8 +82,8 @@ fun AppNavGraph(
             AuthenticatedNavShell(
                 navController = navController,
                 currentRoute = AppDestination.Containers.route
-            ) {
-                ContainersScreen()
+            ) { modifier ->
+                ContainersScreen(modifier = modifier)
             }
         }
 
@@ -90,8 +91,8 @@ fun AppNavGraph(
             AuthenticatedNavShell(
                 navController = navController,
                 currentRoute = AppDestination.Users.route
-            ) {
-                UsersScreen()
+            ) { modifier ->
+                UsersScreen(modifier = modifier)
             }
         }
 
@@ -99,8 +100,8 @@ fun AppNavGraph(
             AuthenticatedNavShell(
                 navController = navController,
                 currentRoute = AppDestination.AuditLogs.route
-            ) {
-                AuditLogsScreen()
+            ) { modifier ->
+                AuditLogsScreen(modifier = modifier)
             }
         }
 
@@ -115,8 +116,8 @@ fun AppNavGraph(
                 navController = navController,
                 currentRoute = AppDestination.ContainerLogs.route,
                 showBottomNav = false
-            ) {
-                ContainerLogsScreen(containerId = containerId)
+            ) { modifier ->
+                ContainerLogsScreen(containerId = containerId, modifier = modifier)
             }
         }
     }
@@ -127,7 +128,7 @@ fun AuthenticatedNavShell(
     navController: NavHostController,
     currentRoute: String,
     showBottomNav: Boolean = true,
-    content: @Composable () -> Unit
+    content: @Composable (Modifier) -> Unit
 ) {
     if (showBottomNav) {
         Scaffold(
@@ -138,10 +139,10 @@ fun AuthenticatedNavShell(
                 )
             }
         ) { innerPadding ->
-            content()
+            content(Modifier.padding(innerPadding))
         }
     } else {
-        content()
+        content(Modifier)
     }
 }
 
