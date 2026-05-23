@@ -39,12 +39,14 @@ class DashboardViewModel(
                 when {
                     nodesResult is ApiResult.Error -> {
                         _uiState.value = DashboardUiState(
-                            error = nodesResult.message ?: "Failed to load nodes"
+                            error = nodesResult.message ?: "Failed to load nodes",
+                            isLoading = false
                         )
                     }
                     containersResult is ApiResult.Error -> {
                         _uiState.value = DashboardUiState(
-                            error = containersResult.message ?: "Failed to load containers"
+                            error = containersResult.message ?: "Failed to load containers",
+                            isLoading = false
                         )
                     }
                     nodesResult is ApiResult.Success && containersResult is ApiResult.Success -> {
@@ -52,12 +54,13 @@ class DashboardViewModel(
                             nodesResult.data,
                             containersResult.data
                         )
-                        _uiState.value = DashboardUiState(summary = summary)
+                        _uiState.value = DashboardUiState(summary = summary, isLoading = false)
                     }
                 }
             } catch (e: Exception) {
                 _uiState.value = DashboardUiState(
-                    error = e.message ?: "An unexpected error occurred"
+                    error = e.message ?: "An unexpected error occurred",
+                    isLoading = false
                 )
             }
         }

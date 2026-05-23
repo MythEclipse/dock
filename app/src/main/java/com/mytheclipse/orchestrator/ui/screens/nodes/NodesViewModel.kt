@@ -128,6 +128,10 @@ class NodesViewModel(
     }
 
     fun submitForm() {
+        if (_uiState.value.actionInProgress) {
+            return
+        }
+
         val formState = _uiState.value.formState
         var hasError = false
         var nameError: String? = null
@@ -164,14 +168,21 @@ class NodesViewModel(
             return
         }
 
+        // Capture validated form state into immutable local value
+        val validatedFormState = formState.copy(
+            nameError = null,
+            hostError = null,
+            portError = null
+        )
+
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(actionInProgress = true, actionError = null)
-            val port = formState.port.toInt()
+            val port = validatedFormState.port.toInt()
             val result = if (_uiState.value.isFormEditing) {
                 val node = _uiState.value.selectedNode ?: return@launch
-                nodeRepository.update(node.id, formState.name, formState.host, port)
+                nodeRepository.update(node.id, validatedFormState.name, validatedFormState.host, port)
             } else {
-                nodeRepository.create(formState.name, formState.host, port)
+                nodeRepository.create(validatedFormState.name, validatedFormState.host, port)
             }
 
             when (result) {
@@ -191,6 +202,10 @@ class NodesViewModel(
     }
 
     fun deleteNode(node: NodeDto) {
+        if (_uiState.value.actionInProgress) {
+            return
+        }
+
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(actionInProgress = true, actionError = null)
             val result = nodeRepository.delete(node.id)
@@ -210,6 +225,10 @@ class NodesViewModel(
     }
 
     fun syncNode(node: NodeDto) {
+        if (_uiState.value.actionInProgress) {
+            return
+        }
+
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(actionInProgress = true, actionError = null)
             val result = nodeRepository.sync(node.id)
@@ -229,6 +248,10 @@ class NodesViewModel(
     }
 
     fun syncContainers(node: NodeDto) {
+        if (_uiState.value.actionInProgress) {
+            return
+        }
+
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(actionInProgress = true, actionError = null)
             val result = nodeRepository.syncContainers(node.id)

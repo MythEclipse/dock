@@ -212,18 +212,19 @@ fun NodesScreen(
 }
 
 @Composable
-fun NodeCard(
+private fun NodeCard(
     node: NodeDto,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     onSync: () -> Unit,
     onSyncContainers: () -> Unit,
-    isActionInProgress: Boolean
+    isActionInProgress: Boolean,
+    modifier: Modifier = Modifier
 ) {
     var showDeleteConfirm by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(PanelHigh, shape = MaterialTheme.shapes.medium)
             .padding(16.dp)
@@ -303,7 +304,7 @@ fun NodeCard(
 }
 
 @Composable
-fun NodeFormDialog(
+private fun NodeFormDialog(
     formState: NodeFormState,
     isEditing: Boolean,
     isLoading: Boolean,
@@ -311,7 +312,8 @@ fun NodeFormDialog(
     onHostChange: (String) -> Unit,
     onPortChange: (String) -> Unit,
     onSubmit: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
