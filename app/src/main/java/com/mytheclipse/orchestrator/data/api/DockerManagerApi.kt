@@ -32,6 +32,9 @@ interface DockerManagerApi {
     @POST("api/nodes/{id}/sync")
     suspend fun syncNode(@Path("id") id: String): Response<SyncContainersResponse>
 
+    @POST("api/nodes/{id}/containers/sync")
+    suspend fun syncNodeContainers(@Path("id") id: String): Response<SyncContainersResponse>
+
     // Containers endpoints
     @GET("api/containers")
     suspend fun getContainers(

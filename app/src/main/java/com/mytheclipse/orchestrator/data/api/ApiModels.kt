@@ -165,7 +165,6 @@ data class OkResponse(
 
 @JsonClass(generateAdapter = false)
 data class SyncContainersResponse(
-    val synced: Int,
-    val failed: Int,
-    val message: String
+    val message: String,
+    val syncedContainerIds: List<String>
 )
