@@ -16,7 +16,7 @@ class AuditLogRepository(
             ApiResult.Error(null, it.message ?: "Network request failed")
         }.let { result ->
             when (result) {
-                is ApiResult.Success -> ApiResult.Success(result.data.logs)
+                is ApiResult.Success -> ApiResult.Success(result.data.auditLogs)
                 is ApiResult.Error -> result
             }
         }

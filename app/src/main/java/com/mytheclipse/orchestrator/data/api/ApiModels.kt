@@ -15,20 +15,16 @@ data class CsrfTokenResponse(
 
 @JsonClass(generateAdapter = false)
 data class UserDto(
-    val id: String,
+    val id: String? = null,
     val email: String,
-    val name: String,
     val role: String,
-    val createdAt: String,
-    val updatedAt: String
+    val createdAt: String? = null,
+    val updatedAt: String? = null
 )
 
 @JsonClass(generateAdapter = false)
 data class UsersResponse(
-    val users: List<UserDto>,
-    val total: Int,
-    val page: Int,
-    val pageSize: Int
+    val users: List<UserDto>
 )
 
 @JsonClass(generateAdapter = false)
@@ -40,7 +36,6 @@ data class UserResponse(
 data class CreateUserRequest(
     val email: String,
     val password: String,
-    val name: String,
     val role: String
 )
 
@@ -48,7 +43,6 @@ data class CreateUserRequest(
 data class UpdateUserRequest(
     val email: String? = null,
     val password: String? = null,
-    val name: String? = null,
     val role: String? = null
 )
 
@@ -112,12 +106,8 @@ data class ContainerDto(
 
 @JsonClass(generateAdapter = false)
 data class ContainersResponse(
-    val containers: List<ContainerDto>,
-    val total: Int,
-    val page: Int,
-    val pageSize: Int
+    val containers: List<ContainerDto>
 )
-
 @JsonClass(generateAdapter = false)
 data class ContainerResponse(
     val container: ContainerDto
@@ -128,41 +118,33 @@ data class CreateContainerRequest(
     val nodeId: String,
     val name: String,
     val image: String,
-    val cpu: Int? = null,
-    val ramMb: Int? = null,
-    val ownerId: String? = null,
-    val env: Map<String, String>? = null
+    val cpu: Int,
+    val ramMb: Int,
+    val ownerId: String? = null
 )
 
 @JsonClass(generateAdapter = false)
 data class LogsResponse(
-    val logs: String,
-    val containerId: String
+    val logs: String
 )
 
 @JsonClass(generateAdapter = false)
 data class DockerHubSearchResponse(
-    val results: List<DockerHubImageDto>,
-    val count: Int
+    val results: List<DockerHubImageDto>
 )
-
 @JsonClass(generateAdapter = false)
 data class DockerHubImageDto(
     val name: String,
     val description: String,
     val starCount: Int,
     val pullCount: Int,
-    val official: Boolean
+    val isOfficial: Boolean
 )
 
 @JsonClass(generateAdapter = false)
 data class AuditLogsResponse(
-    val logs: List<AuditLogDto>,
-    val total: Int,
-    val page: Int,
-    val pageSize: Int
+    val auditLogs: List<AuditLogDto>
 )
-
 @JsonClass(generateAdapter = false)
 data class AuditLogDto(
     val id: String? = null,
@@ -170,7 +152,7 @@ data class AuditLogDto(
     val action: String,
     val resourceType: String,
     val resourceId: String? = null,
-    val metadata: String? = null,
+    val metadata: Map<String, Any?>? = null,
     val createdAt: String? = null,
     val user: UserDto? = null
 )

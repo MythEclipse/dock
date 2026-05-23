@@ -41,13 +41,12 @@ class ContainerRepository(
         nodeId: String,
         name: String,
         image: String,
-        cpu: Int? = null,
-        ramMb: Int? = null,
-        ownerId: String? = null,
-        env: Map<String, String>? = null
+        cpu: Int,
+        ramMb: Int,
+        ownerId: String? = null
     ): ApiResult<ContainerDto> {
         return runCatching {
-            network.parseResponse(api.createContainer(CreateContainerRequest(nodeId, name, image, cpu, ramMb, ownerId, env)))
+            network.parseResponse(api.createContainer(CreateContainerRequest(nodeId, name, image, cpu, ramMb, ownerId)))
         }.getOrElse {
             ApiResult.Error(null, it.message ?: "Network request failed")
         }.let { result ->

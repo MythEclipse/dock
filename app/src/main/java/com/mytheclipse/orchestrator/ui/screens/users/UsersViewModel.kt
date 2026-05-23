@@ -105,7 +105,7 @@ class UsersViewModel(
         _uiState.value = _uiState.value.copy(actionInProgress = "Creating user...", error = null)
         viewModelScope.launch {
             try {
-                val result = userRepository.create(email, password, "", role)
+                val result = userRepository.create(email, password, role)
                 when (result) {
                     is ApiResult.Success -> {
                         val updatedUsers = _uiState.value.users + result.data

@@ -394,7 +394,7 @@ fun ContainerCard(
 fun CreateContainerDialog(
     nodes: List<NodeDto>,
     onDismiss: () -> Unit,
-    onCreate: (nodeId: String, name: String, image: String, cpu: Int?, ramMb: Int?, ownerId: String?) -> Unit,
+    onCreate: (nodeId: String, name: String, image: String, cpu: Int, ramMb: Int, ownerId: String?) -> Unit,
     viewModel: ContainersViewModel
 ) {
     var selectedNodeId by remember { mutableStateOf(nodes.firstOrNull()?.id ?: "") }
@@ -577,7 +577,7 @@ fun CreateContainerDialog(
                                 DropdownMenuItem(
                                     text = { Text(user.email) },
                                     onClick = {
-                                        selectedOwnerId = user.id
+                                        selectedOwnerId = user.id.orEmpty()
                                         showOwnerDropdown = false
                                     }
                                 )
@@ -656,13 +656,13 @@ fun CreateContainerDialog(
                                 val owner = if (selectedOwnerId.isNotBlank()) selectedOwnerId else null
 
                                 // Validate positive integers
-                                if ((cpu == null || cpu > 0) && (ram == null || ram > 0)) {
+                                if (cpu != null && cpu > 0 && ram != null && ram > 0) {
                                     onCreate(selectedNodeId, containerName, imageName, cpu, ram, owner)
                                 }
                             }
                         },
                         modifier = Modifier.weight(1f),
-                        enabled = containerName.isNotBlank() && imageName.isNotBlank() && selectedNodeId.isNotBlank() && nodes.isNotEmpty()
+                        enabled = containerName.isNotBlank() && imageName.isNotBlank() && selectedNodeId.isNotBlank() && cpuValue.toIntOrNull()?.let { it > 0 } == true && ramValue.toIntOrNull()?.let { it > 0 } == true && nodes.isNotEmpty()
                     ) {
                         Text("Create")
                     }
@@ -717,7 +717,7 @@ fun SearchResultItem(
                     style = MaterialTheme.typography.labelSmall,
                     color = TextMuted
                 )
-                if (image.official) {
+                if (image.isOfficial) {
                     Text(
                         text = "Official",
                         style = MaterialTheme.typography.labelSmall,

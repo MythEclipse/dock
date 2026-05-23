@@ -171,7 +171,7 @@ fun UsersScreen(
                 user = editingUser,
                 onDismiss = { viewModel.closeEditDialog() },
                 onUpdate = { email, password, role ->
-                    viewModel.updateUser(editingUser.id, email, password, role)
+                    editingUser.id?.let { viewModel.updateUser(it, email, password, role) }
                 },
                 isLoading = uiState.actionInProgress != null
             )
@@ -184,7 +184,7 @@ fun UsersScreen(
             DeleteUserConfirmationDialog(
                 user = selectedUser,
                 onDismiss = { viewModel.closeDeleteConfirmation() },
-                onConfirm = { viewModel.deleteUser(selectedUser.id) },
+                onConfirm = { selectedUser.id?.let { viewModel.deleteUser(it) } },
                 isLoading = uiState.actionInProgress != null
             )
         }

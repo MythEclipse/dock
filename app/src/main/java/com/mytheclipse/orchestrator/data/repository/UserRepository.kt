@@ -24,9 +24,9 @@ class UserRepository(
         }
     }
 
-    suspend fun create(email: String, password: String, name: String, role: String): ApiResult<UserDto> {
+    suspend fun create(email: String, password: String, role: String): ApiResult<UserDto> {
         return runCatching {
-            network.parseResponse(api.createUser(CreateUserRequest(email, password, name, role)))
+            network.parseResponse(api.createUser(CreateUserRequest(email, password, role)))
         }.getOrElse {
             ApiResult.Error(null, it.message ?: "Network request failed")
         }.let { result ->
@@ -37,9 +37,9 @@ class UserRepository(
         }
     }
 
-    suspend fun update(id: String, email: String? = null, password: String? = null, name: String? = null, role: String? = null): ApiResult<UserDto> {
+    suspend fun update(id: String, email: String? = null, password: String? = null, role: String? = null): ApiResult<UserDto> {
         return runCatching {
-            network.parseResponse(api.updateUser(id, UpdateUserRequest(email, password, name, role)))
+            network.parseResponse(api.updateUser(id, UpdateUserRequest(email, password, role)))
         }.getOrElse {
             ApiResult.Error(null, it.message ?: "Network request failed")
         }.let { result ->

@@ -125,8 +125,8 @@ class ContainersViewModel(
         nodeId: String,
         name: String,
         image: String,
-        cpu: Int? = null,
-        ramMb: Int? = null,
+        cpu: Int,
+        ramMb: Int,
         ownerId: String? = null
     ) {
         if (_uiState.value.actionInProgress != null) return

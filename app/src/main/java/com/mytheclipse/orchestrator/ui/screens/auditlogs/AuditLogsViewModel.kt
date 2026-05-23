@@ -110,7 +110,7 @@ class AuditLogsViewModel(
                 log.resourceType.lowercase().contains(query) ||
                 log.resourceId?.lowercase()?.contains(query) == true ||
                 log.user?.email?.lowercase()?.contains(query) == true ||
-                log.metadata?.lowercase()?.contains(query) == true
+                log.metadata?.toString()?.lowercase()?.contains(query) == true
             }
         }
 
