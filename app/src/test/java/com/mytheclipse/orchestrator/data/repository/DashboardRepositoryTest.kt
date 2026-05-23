@@ -14,8 +14,8 @@ class DashboardRepositoryTest {
                 NodeDto(id = "n2", name = "Node 2", portainerUrl = "http://localhost:9001", status = "offline", createdAt = "", updatedAt = ""),
             ),
             containers = listOf(
-                ContainerDto(id = "c1", nodeId = "n1", name = "A", image = "nginx", status = "running", ports = emptyList(), createdAt = "", updatedAt = ""),
-                ContainerDto(id = "c2", nodeId = "n1", name = "B", image = "redis", status = "stopped", ports = emptyList(), createdAt = "", updatedAt = ""),
+                ContainerDto(id = "c1", nodeId = "n1", name = "A", image = "nginx", status = "running", createdAt = "", updatedAt = ""),
+                ContainerDto(id = "c2", nodeId = "n1", name = "B", image = "redis", status = "stopped", createdAt = "", updatedAt = ""),
             ),
         )
 

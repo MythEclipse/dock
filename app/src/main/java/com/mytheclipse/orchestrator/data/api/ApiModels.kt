@@ -42,6 +42,7 @@ data class CreateUserRequest(
 @JsonClass(generateAdapter = false)
 data class UpdateUserRequest(
     val email: String? = null,
+    val password: String? = null,
     val name: String? = null,
     val role: String? = null
 )

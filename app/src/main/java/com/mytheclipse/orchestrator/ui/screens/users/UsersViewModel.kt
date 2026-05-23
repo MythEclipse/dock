@@ -100,8 +100,8 @@ class UsersViewModel(
             return
         }
 
+        _uiState.value = _uiState.value.copy(actionInProgress = "Creating user...", error = null)
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(actionInProgress = "Creating user...", error = null)
             try {
                 val result = userRepository.create(email, password, "", role)
                 when (result) {
@@ -142,10 +142,10 @@ class UsersViewModel(
             return
         }
 
+        _uiState.value = _uiState.value.copy(actionInProgress = "Updating user...", error = null)
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(actionInProgress = "Updating user...", error = null)
             try {
-                val result = userRepository.update(userId, email, null, role)
+                val result = userRepository.update(userId, email, password, role)
                 when (result) {
                     is ApiResult.Success -> {
                         val updatedUsers = _uiState.value.users.map {
@@ -183,8 +183,8 @@ class UsersViewModel(
     fun deleteUser(userId: String) {
         if (_uiState.value.actionInProgress != null) return
 
+        _uiState.value = _uiState.value.copy(actionInProgress = "Deleting user...", error = null)
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(actionInProgress = "Deleting user...", error = null)
             try {
                 val result = userRepository.delete(userId)
                 when (result) {

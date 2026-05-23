@@ -354,9 +354,9 @@ fun EditUserDialog(
     onUpdate: (email: String?, password: String?, role: String?) -> Unit,
     isLoading: Boolean = false
 ) {
-    var email by remember { mutableStateOf(user.email) }
-    var password by remember { mutableStateOf("") }
-    var role by remember { mutableStateOf(user.role) }
+    var email by remember(user.id) { mutableStateOf(user.email) }
+    var password by remember(user.id) { mutableStateOf("") }
+    var role by remember(user.id) { mutableStateOf(user.role) }
     var roleMenuExpanded by remember { mutableStateOf(false) }
 
     AlertDialog(
@@ -433,7 +433,7 @@ fun EditUserDialog(
                         role.takeIf { it != user.role }
                     )
                 },
-                enabled = !isLoading
+                enabled = !isLoading && email.isNotBlank() && role.isNotBlank() && (email != user.email || password.isNotBlank() || role != user.role)
             ) {
                 if (isLoading) {
                     CircularProgressIndicator(

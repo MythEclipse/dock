@@ -37,9 +37,9 @@ class UserRepository(
         }
     }
 
-    suspend fun update(id: String, email: String? = null, name: String? = null, role: String? = null): ApiResult<UserDto> {
+    suspend fun update(id: String, email: String? = null, password: String? = null, name: String? = null, role: String? = null): ApiResult<UserDto> {
         return runCatching {
-            network.parseResponse(api.updateUser(id, UpdateUserRequest(email, name, role)))
+            network.parseResponse(api.updateUser(id, UpdateUserRequest(email, password, name, role)))
         }.getOrElse {
             ApiResult.Error(null, it.message ?: "Network request failed")
         }.let { result ->
