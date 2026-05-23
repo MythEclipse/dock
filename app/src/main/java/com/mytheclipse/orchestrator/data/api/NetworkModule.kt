@@ -34,16 +34,20 @@ class NetworkModule(private val sessionCookieStore: SessionCookieStore) {
             ApiResult.Success(response.body()!!)
         } else {
             val errorMessage = try {
-                val errorBody = response.errorBody()?.string()
-                if (errorBody.isNullOrBlank()) {
-                    "Request failed"
+                val raw = response.errorBody()?.string() ?: "Request failed"
+                if (raw == "Request failed" || raw.isBlank()) {
+                    raw
                 } else {
-                    val errorBodyAdapter = moshi.adapter(ApiErrorBody::class.java)
-                    val apiErrorBody = errorBodyAdapter.fromJson(errorBody)
-                    apiErrorBody?.error ?: apiErrorBody?.message ?: errorBody
+                    try {
+                        val errorBodyAdapter = moshi.adapter(ApiErrorBody::class.java)
+                        val apiErrorBody = errorBodyAdapter.fromJson(raw)
+                        apiErrorBody?.error ?: apiErrorBody?.message ?: raw
+                    } catch (e: Exception) {
+                        raw
+                    }
                 }
             } catch (e: Exception) {
-                response.errorBody()?.string() ?: "Request failed"
+                "Request failed"
             }
             ApiResult.Error(response.code(), errorMessage)
         }

@@ -24,12 +24,30 @@ class SessionCookieStore(context: Context) : CookieJar {
 
     override fun loadForRequest(url: HttpUrl): List<Cookie> {
         val cookies = mutableListOf<Cookie>()
-        for ((_, value) in prefs.all) {
-            val cookie = Cookie.parse(url, value as String)
+        val expiredKeys = mutableListOf<String>()
+        val currentTime = System.currentTimeMillis()
+
+        for ((key, value) in prefs.all) {
+            val stringValue = value as? String ?: continue
+            val cookie = Cookie.parse(url, stringValue)
             if (cookie != null) {
-                cookies.add(cookie)
+                if (cookie.expiresAt > currentTime) {
+                    cookies.add(cookie)
+                } else {
+                    expiredKeys.add(key)
+                }
             }
         }
+
+        // Remove expired cookies from prefs
+        if (expiredKeys.isNotEmpty()) {
+            prefs.edit().apply {
+                for (key in expiredKeys) {
+                    remove(key)
+                }
+            }.apply()
+        }
+
         return cookies
     }
 
