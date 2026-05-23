@@ -6,7 +6,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import com.mytheclipse.orchestrator.ui.theme.DangerRed
 import com.mytheclipse.orchestrator.ui.theme.TextPrimary
 
@@ -26,9 +25,11 @@ fun ConfirmDialog(
         confirmButton = {
             Button(
                 onClick = onConfirm,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (destructive) DangerRed else Color.Unspecified
-                )
+                colors = if (destructive) {
+                    ButtonDefaults.buttonColors(containerColor = DangerRed)
+                } else {
+                    ButtonDefaults.buttonColors()
+                }
             ) {
                 Text(confirmLabel)
             }

@@ -7,13 +7,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,21 +45,13 @@ fun TerminalLogViewer(
                 modifier = Modifier.weight(1f)
             )
             if (onRefresh != null) {
-                IconButton(onClick = onRefresh, modifier = Modifier.then(Modifier)) {
-                    Icon(
-                        imageVector = Icons.Default.Refresh,
-                        contentDescription = "Refresh logs",
-                        tint = TextMuted
-                    )
+                TextButton(onClick = onRefresh) {
+                    Text("Refresh")
                 }
             }
             if (onCopy != null) {
-                IconButton(onClick = onCopy, modifier = Modifier.then(Modifier)) {
-                    Icon(
-                        imageVector = Icons.Default.ContentCopy,
-                        contentDescription = "Copy logs",
-                        tint = TextMuted
-                    )
+                TextButton(onClick = onCopy) {
+                    Text("Copy")
                 }
             }
         }
