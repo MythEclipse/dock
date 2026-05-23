@@ -38,20 +38,21 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
         viewModelScope.launch {
             uiState = uiState.copy(isLoading = true, error = null)
 
-            // AuthRepository.login is not yet implemented, so we simulate success
-            // by checking if session exists after a brief delay
-            try {
-                // Placeholder: In a real implementation, this would call authRepository.login(email, password)
-                // For now, we just set isLoggedIn to true to allow navigation
-                uiState = uiState.copy(
-                    isLoading = false,
-                    isLoggedIn = true
-                )
-            } catch (e: Exception) {
-                uiState = uiState.copy(
-                    isLoading = false,
-                    error = e.message ?: "Login failed"
-                )
+            val result = authRepository.login(uiState.email, uiState.password)
+
+            when (result) {
+                is ApiResult.Success -> {
+                    uiState = uiState.copy(
+                        isLoading = false,
+                        isLoggedIn = true
+                    )
+                }
+                is ApiResult.Error -> {
+                    uiState = uiState.copy(
+                        isLoading = false,
+                        error = result.message
+                    )
+                }
             }
         }
     }
@@ -60,3 +61,4 @@ class LoginViewModel(private val authRepository: AuthRepository) : ViewModel() {
         uiState = uiState.copy(isLoggedIn = false)
     }
 }
+

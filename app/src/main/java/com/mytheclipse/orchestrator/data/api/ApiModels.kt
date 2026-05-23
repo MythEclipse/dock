@@ -9,6 +9,11 @@ data class ApiErrorBody(
 )
 
 @JsonClass(generateAdapter = false)
+data class CsrfTokenResponse(
+    val csrfToken: String
+)
+
+@JsonClass(generateAdapter = false)
 data class UserDto(
     val id: String,
     val email: String,

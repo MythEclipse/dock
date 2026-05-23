@@ -14,7 +14,7 @@ class AppContainer(context: Context) {
     private val sessionCookieStore = SessionCookieStore(context)
     private val networkModule = NetworkModule(sessionCookieStore)
 
-    val authRepository = AuthRepository(sessionCookieStore)
+    val authRepository = AuthRepository(sessionCookieStore, networkModule)
     val nodeRepository = NodeRepository(networkModule)
     val containerRepository = ContainerRepository(networkModule)
     val userRepository = UserRepository(networkModule)
