@@ -15,7 +15,8 @@ import kotlinx.coroutines.launch
 data class DashboardUiState(
     val summary: DashboardSummary? = null,
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val isUnauthorized: Boolean = false
 )
 
 class DashboardViewModel(
@@ -40,13 +41,15 @@ class DashboardViewModel(
                     nodesResult is ApiResult.Error -> {
                         _uiState.value = DashboardUiState(
                             error = nodesResult.message ?: "Failed to load nodes",
-                            isLoading = false
+                            isLoading = false,
+                            isUnauthorized = nodesResult.statusCode == 401
                         )
                     }
                     containersResult is ApiResult.Error -> {
                         _uiState.value = DashboardUiState(
                             error = containersResult.message ?: "Failed to load containers",
-                            isLoading = false
+                            isLoading = false,
+                            isUnauthorized = containersResult.statusCode == 401
                         )
                     }
                     nodesResult is ApiResult.Success && containersResult is ApiResult.Success -> {

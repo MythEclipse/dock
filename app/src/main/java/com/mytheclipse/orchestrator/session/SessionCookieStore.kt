@@ -6,8 +6,20 @@ import androidx.security.crypto.MasterKey
 import okhttp3.Cookie
 import okhttp3.CookieJar
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 
 class SessionCookieStore(context: Context) : CookieJar {
+    companion object {
+        fun hasSessionCookie(cookies: List<Cookie>): Boolean {
+            return cookies.any { cookie ->
+                cookie.name == "authjs.session-token" ||
+                    cookie.name == "__Secure-authjs.session-token" ||
+                    cookie.name == "next-auth.session-token" ||
+                    cookie.name == "__Secure-next-auth.session-token"
+            }
+        }
+    }
+
     private val prefs = EncryptedSharedPreferences.create(
         context,
         "docker_manager_session",
@@ -51,7 +63,9 @@ class SessionCookieStore(context: Context) : CookieJar {
         return cookies
     }
 
-    fun hasSession(): Boolean = prefs.all.isNotEmpty()
+    fun hasSession(): Boolean {
+        return hasSessionCookie(loadForRequest("https://docker.asepharyana.tech/".toHttpUrl()))
+    }
 
     fun clear() {
         prefs.edit().clear().apply()

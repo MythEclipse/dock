@@ -30,6 +30,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,7 +51,8 @@ import com.mytheclipse.orchestrator.ui.theme.TextPrimary
 @Composable
 fun NodesScreen(
     appContainer: AppContainer? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onUnauthorized: () -> Unit = {}
 ) {
     val viewModel = remember {
         appContainer?.let { NodesViewModel(it.nodeRepository) }
@@ -80,6 +82,12 @@ fun NodesScreen(
     }
 
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(uiState.isUnauthorized) {
+        if (uiState.isUnauthorized) {
+            onUnauthorized()
+        }
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),

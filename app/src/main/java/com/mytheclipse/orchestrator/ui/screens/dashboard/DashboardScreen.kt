@@ -17,6 +17,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -35,7 +36,8 @@ import com.mytheclipse.orchestrator.ui.theme.WarningAmber
 @Composable
 fun DashboardScreen(
     appContainer: AppContainer? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onUnauthorized: () -> Unit = {}
 ) {
     val viewModel = remember {
         appContainer?.let {
@@ -67,6 +69,12 @@ fun DashboardScreen(
     }
 
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(uiState.isUnauthorized) {
+        if (uiState.isUnauthorized) {
+            onUnauthorized()
+        }
+    }
 
     Column(
         modifier = modifier

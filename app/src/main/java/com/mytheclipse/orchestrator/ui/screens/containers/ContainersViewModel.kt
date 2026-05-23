@@ -27,7 +27,8 @@ data class ContainersUiState(
     val isLoadingLogs: Boolean = false,
     val error: String? = null,
     val actionInProgress: String? = null,
-    val successMessage: String? = null
+    val successMessage: String? = null,
+    val isUnauthorized: Boolean = false
 )
 
 class ContainersViewModel(
@@ -54,13 +55,15 @@ class ContainersViewModel(
                     containersResult is ApiResult.Error -> {
                         _uiState.value = _uiState.value.copy(
                             error = containersResult.message ?: "Failed to load containers",
-                            isLoading = false
+                            isLoading = false,
+                            isUnauthorized = containersResult.statusCode == 401
                         )
                     }
                     nodesResult is ApiResult.Error -> {
                         _uiState.value = _uiState.value.copy(
                             error = nodesResult.message ?: "Failed to load nodes",
-                            isLoading = false
+                            isLoading = false,
+                            isUnauthorized = nodesResult.statusCode == 401
                         )
                     }
                     containersResult is ApiResult.Success && nodesResult is ApiResult.Success -> {

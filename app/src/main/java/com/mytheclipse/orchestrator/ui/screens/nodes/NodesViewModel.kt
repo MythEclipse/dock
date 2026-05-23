@@ -32,7 +32,8 @@ data class NodesUiState(
     val selectedNode: NodeDto? = null,
     val isFormEditing: Boolean = false,
     val actionInProgress: Boolean = false,
-    val actionError: String? = null
+    val actionError: String? = null,
+    val isUnauthorized: Boolean = false
 )
 
 class NodesViewModel(
@@ -59,7 +60,8 @@ class NodesViewModel(
                 is ApiResult.Error -> {
                     _uiState.value = _uiState.value.copy(
                         error = result.message ?: "Failed to load nodes",
-                        isLoading = false
+                        isLoading = false,
+                        isUnauthorized = result.statusCode == 401
                     )
                 }
             }

@@ -66,7 +66,8 @@ import com.mytheclipse.orchestrator.ui.theme.TextPrimary
 @Composable
 fun ContainersScreen(
     viewModel: ContainersViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onUnauthorized: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -74,6 +75,12 @@ fun ContainersScreen(
     var showLogsDialog by remember { mutableStateOf(false) }
     var showDeleteConfirm by remember { mutableStateOf(false) }
     var containerToDelete by remember { mutableStateOf<ContainerDto?>(null) }
+
+    LaunchedEffect(uiState.isUnauthorized) {
+        if (uiState.isUnauthorized) {
+            onUnauthorized()
+        }
+    }
 
     LaunchedEffect(uiState.error) {
         uiState.error?.let {

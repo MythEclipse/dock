@@ -20,7 +20,8 @@ data class UsersUiState(
     val showEditDialog: Boolean = false,
     val showDeleteConfirmation: Boolean = false,
     val selectedUser: UserDto? = null,
-    val editingUser: UserDto? = null
+    val editingUser: UserDto? = null,
+    val isUnauthorized: Boolean = false
 )
 
 class UsersViewModel(
@@ -48,7 +49,8 @@ class UsersViewModel(
                     is ApiResult.Error -> {
                         _uiState.value = _uiState.value.copy(
                             error = result.message ?: "Failed to load users",
-                            isLoading = false
+                            isLoading = false,
+                            isUnauthorized = result.statusCode == 401
                         )
                     }
                 }

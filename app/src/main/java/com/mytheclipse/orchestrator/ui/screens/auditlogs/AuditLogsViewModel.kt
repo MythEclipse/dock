@@ -19,7 +19,8 @@ data class AuditLogsUiState(
     val filterAction: String? = null,
     val filterResourceType: String? = null,
     val filterResourceId: String? = null,
-    val filterUserEmail: String? = null
+    val filterUserEmail: String? = null,
+    val isUnauthorized: Boolean = false
 )
 
 class AuditLogsViewModel(
@@ -48,7 +49,8 @@ class AuditLogsViewModel(
                     is ApiResult.Error -> {
                         _uiState.value = _uiState.value.copy(
                             error = result.message ?: "Failed to load audit logs",
-                            isLoading = false
+                            isLoading = false,
+                            isUnauthorized = result.statusCode == 401
                         )
                     }
                 }

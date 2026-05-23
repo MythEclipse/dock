@@ -68,7 +68,16 @@ fun AppNavGraph(
                 navController = navController,
                 currentRoute = AppDestination.Dashboard.route
             ) { modifier ->
-                DashboardScreen(appContainer = appContainer, modifier = modifier)
+                DashboardScreen(
+                    appContainer = appContainer,
+                    modifier = modifier,
+                    onUnauthorized = {
+                        appContainer.authRepository.clear()
+                        navController.navigate(AppDestination.Login.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
+                )
             }
         }
 
@@ -77,7 +86,16 @@ fun AppNavGraph(
                 navController = navController,
                 currentRoute = AppDestination.Nodes.route
             ) { modifier ->
-                NodesScreen(appContainer = appContainer, modifier = modifier)
+                NodesScreen(
+                    appContainer = appContainer,
+                    modifier = modifier,
+                    onUnauthorized = {
+                        appContainer.authRepository.clear()
+                        navController.navigate(AppDestination.Login.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
+                )
             }
         }
 
@@ -93,7 +111,16 @@ fun AppNavGraph(
                         appContainer.userRepository
                     )
                 }
-                ContainersScreen(viewModel = viewModel, modifier = modifier)
+                ContainersScreen(
+                    viewModel = viewModel,
+                    modifier = modifier,
+                    onUnauthorized = {
+                        appContainer.authRepository.clear()
+                        navController.navigate(AppDestination.Login.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
+                )
             }
         }
 
@@ -105,7 +132,16 @@ fun AppNavGraph(
                 val viewModel = remember {
                     UsersViewModel(appContainer.userRepository)
                 }
-                UsersScreen(viewModel = viewModel, modifier = modifier)
+                UsersScreen(
+                    viewModel = viewModel,
+                    modifier = modifier,
+                    onUnauthorized = {
+                        appContainer.authRepository.clear()
+                        navController.navigate(AppDestination.Login.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
+                )
             }
         }
 
@@ -117,7 +153,16 @@ fun AppNavGraph(
                 val viewModel = remember {
                     AuditLogsViewModel(appContainer.auditLogRepository)
                 }
-                AuditLogsScreen(viewModel = viewModel, modifier = modifier)
+                AuditLogsScreen(
+                    viewModel = viewModel,
+                    modifier = modifier,
+                    onUnauthorized = {
+                        appContainer.authRepository.clear()
+                        navController.navigate(AppDestination.Login.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
+                )
             }
         }
 

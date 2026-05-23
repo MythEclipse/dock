@@ -56,10 +56,17 @@ import com.mytheclipse.orchestrator.ui.theme.TextPrimary
 @Composable
 fun UsersScreen(
     viewModel: UsersViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onUnauthorized: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(uiState.isUnauthorized) {
+        if (uiState.isUnauthorized) {
+            onUnauthorized()
+        }
+    }
 
     LaunchedEffect(uiState.error) {
         uiState.error?.let {
