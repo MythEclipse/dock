@@ -17,9 +17,6 @@ interface DockerManagerApi {
         @Query("pageSize") pageSize: Int = 10
     ): Response<NodesResponse>
 
-    @GET("api/nodes/{id}")
-    suspend fun getNode(@Path("id") id: String): Response<NodeResponse>
-
     @POST("api/nodes")
     suspend fun createNode(@Body request: CreateNodeRequest): Response<NodeResponse>
 
@@ -48,12 +45,6 @@ interface DockerManagerApi {
     @POST("api/containers")
     suspend fun createContainer(@Body request: CreateContainerRequest): Response<ContainerResponse>
 
-    @PUT("api/containers/{id}")
-    suspend fun updateContainer(
-        @Path("id") id: String,
-        @Body request: CreateContainerRequest
-    ): Response<ContainerResponse>
-
     @DELETE("api/containers/{id}")
     suspend fun deleteContainer(@Path("id") id: String): Response<OkResponse>
 
@@ -79,9 +70,6 @@ interface DockerManagerApi {
         @Query("page") page: Int = 1,
         @Query("pageSize") pageSize: Int = 10
     ): Response<UsersResponse>
-
-    @GET("api/users/{id}")
-    suspend fun getUser(@Path("id") id: String): Response<UserResponse>
 
     @POST("api/users")
     suspend fun createUser(@Body request: CreateUserRequest): Response<UserResponse>

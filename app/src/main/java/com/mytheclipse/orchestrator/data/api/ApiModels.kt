@@ -9,12 +9,6 @@ data class ApiErrorBody(
 )
 
 @JsonClass(generateAdapter = false)
-data class LoginRequest(
-    val email: String,
-    val password: String
-)
-
-@JsonClass(generateAdapter = false)
 data class UserDto(
     val id: String,
     val email: String,
