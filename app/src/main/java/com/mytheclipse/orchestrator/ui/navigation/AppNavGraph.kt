@@ -65,7 +65,7 @@ fun AppNavGraph(
                 navController = navController,
                 currentRoute = AppDestination.Dashboard.route
             ) { modifier ->
-                DashboardScreen(modifier = modifier)
+                DashboardScreen(appContainer = appContainer, modifier = modifier)
             }
         }
 
@@ -74,7 +74,7 @@ fun AppNavGraph(
                 navController = navController,
                 currentRoute = AppDestination.Nodes.route
             ) { modifier ->
-                NodesScreen(modifier = modifier)
+                NodesScreen(appContainer = appContainer, modifier = modifier)
             }
         }
 
